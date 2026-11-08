@@ -2,25 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=128, initial-scale=1">
+<meta name="viewport" content="width=64, initial-scale=1">
 <title>IVAN AI</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:monospace; }
-  body { width:128px; height:160px; overflow:hidden; background:#000; color:#0f0;
-         display:flex; flex-direction:column; font-size:9px; }
-  #header { background:#000; padding:2px; text-align:center; border-bottom:1px solid #0f0; flex:0 0 11px; }
-  #chat   { flex:1; overflow-y:auto; padding:2px; }
-  .q { color:#0f6; margin:2px 0; }
-  .a { color:#0f0; margin:2px 0; white-space:pre-wrap; }
-  .img { max-width:64px; max-height:42px; display:block; margin:2px 0; border:1px solid #0f0; }
-  #inputbar { flex:0 0 15px; display:flex; border-top:1px solid #0f0; }
-  #inputbar input { flex:1; background:#000; color:#0f0; border:0; font-size:9px; padding:3px; }
+  body { width:64px; height:80px; overflow:hidden; background:#000; color:#0f0;
+         display:flex; flex-direction:column; font-size:6px; }
+  #header { background:#000; padding:1px; text-align:center; border-bottom:1px solid #0f0; flex:0 0 8px; font-size:6px; }
+  #chat   { flex:1; overflow-y:auto; padding:1px; }
+  .q { color:#0f6; margin:1px 0; }
+  .a { color:#0f0; margin:1px 0; white-space:pre-wrap; }
+  .img { max-width:32px; max-height:21px; display:block; margin:1px 0; border:1px solid #0f0; }
+  #inputbar { flex:0 0 10px; display:flex; border-top:1px solid #0f0; }
+  #inputbar input { flex:1; background:#000; color:#0f0; border:0; font-size:6px; padding:1px; min-width:0; }
   #inputbar button { background:#000; color:#0f0; border:0; border-left:1px solid #0f0;
-                     font-family:monospace; font-size:11px; padding:0 5px; }
+                     font-family:monospace; font-size:7px; padding:0 2px; }
 
   /* highlight for the currently focused element */
-  .focused { outline:2px solid #0f0; outline-offset:-1px; }
-  #chat.focused { outline:2px solid #0f0; outline-offset:-2px; }
+  .focused { outline:1px solid #0f0; outline-offset:-1px; }
 </style>
 </head>
 <body>
@@ -55,7 +54,7 @@ async function addImages(keywords) {
           action:"query", format:"json", origin:"*",
           generator:"search", gsrsearch:"filetype:bitmap " + kw.trim(),
           gsrnamespace:"6", gsrlimit:"1",
-          prop:"imageinfo", iiprop:"url", iiurlwidth:"64"
+          prop:"imageinfo", iiprop:"url", iiurlwidth:"32"
         }));
       const j = await r.json();
       const page = j.query && j.query.pages && Object.values(j.query.pages)[0];
@@ -94,7 +93,7 @@ async function getAI(question) {
 
     if (res.status === 402) {
       const wait = Math.max(parseInt(res.headers.get("Retry-After")) || 1, 1);
-      const msg = add('a', "busy, waiting " + wait + "s...");
+      const msg = add('a', "busy, wait " + wait + "s...");
       await sleep(wait);
       msg.remove();
       continue;
@@ -165,14 +164,12 @@ document.addEventListener('keydown', e => {
       setFocus(focusIndex === -1 ? 0 : focusIndex - 1);
       break;
     case 'ArrowLeft':
-      if (!typing) { e.preventDefault(); if (focusIndex === 1) chat.scrollTop -= 40; }
+      if (!typing) { e.preventDefault(); if (focusIndex === 1) chat.scrollTop -= 20; }
       break;
     case 'ArrowRight':
-      if (!typing) { e.preventDefault(); if (focusIndex === 1) chat.scrollTop += 40; }
+      if (!typing) { e.preventDefault(); if (focusIndex === 1) chat.scrollTop += 20; }
       break;
     case 'Enter':
-      // Enter inside input submits (handled by q's own listener);
-      // otherwise Enter acts as D-pad OK
       if (document.activeElement !== q) {
         e.preventDefault();
         dpadOk();
